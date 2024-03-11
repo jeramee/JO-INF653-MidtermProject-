@@ -1,7 +1,7 @@
-# JO-INF653-MidtermProject-
+# JO-INF653-MidtermProject
 The project involves developing Zippy Used Autos' PHP Web Application, including database creation, public homepage features, admin backend, MVC design, responsive design, Heroku deployment, and submission requirements.
 
-## INF 653 - PHP ToDo List Application
+## INF 653 - PHP Web Application Zippy Used Autos
 
 **Author:** Jeramee Oliver  
 **Date:** 3/10/2024  
@@ -98,5 +98,3 @@ b. **Dynamic Admin Footer:** Create an admin footer menu that adapts to the disp
 
 - No code repo push updates after the due date accepted.
 - Set up your files following the provided code structure and let me know if you have any questions or issues.
-
-

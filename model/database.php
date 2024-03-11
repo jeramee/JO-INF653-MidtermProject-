@@ -1,10 +1,9 @@
 <!-- ../model/database.php -->
 <?php
-
 if (!function_exists('connectToDatabase')) {
     function connectToDatabase() {
         $host = 'localhost';
-        $dbname = 'todolist';
+        $dbname = 'zippyusedautos'; // Updated database name
         $username = 'root';
         $password = ''; // Use your actual password if set
 
@@ -21,7 +20,4 @@ if (!function_exists('connectToDatabase')) {
 
 // Usage in other files:
 $conn = connectToDatabase();
-
-
-// Usage in other files:
-$conn = connectToDatabase();
+?>

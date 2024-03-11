@@ -1,9 +1,7 @@
 <!-- ../model/category_db.php -->
 <?php
+include_once('database.php');
 
-include("database.php");
-
-// Function to get categories from the database
 function getCategories($conn) {
     $query = 'SELECT * FROM categories';
     $statement = $conn->prepare($query);
@@ -36,7 +34,6 @@ function getCategoryByName($conn, $categoryName) {
     return $category;
 }
 
-
 function addCategory($conn, $category_name) {
     try {
         // Log statement for debugging
@@ -57,7 +54,6 @@ function addCategory($conn, $category_name) {
     }
 }
 
-
 function removeCategory($conn, $category_id) {
     $query = 'DELETE FROM categories WHERE category_id = :category_id';
     
@@ -67,3 +63,4 @@ function removeCategory($conn, $category_id) {
     $statement->closeCursor();
 }
 ?>
+
