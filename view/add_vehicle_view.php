@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Vehicle</title>
     <!-- Include any additional head elements from your original code here... -->
+    <script>
+        function showErrorPopup() {
+            alert("Error inserting data: Duplicate vehicle in that category.");
+            // You can use a more sophisticated modal/popup library if needed
+        }
+    </script>
 </head>
 <body>
     <h1>Add Vehicle</h1>

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vehicle Inventory</title>
+    <!-- Include the script tag here -->
     <script>
         function showErrorPopup() {
             alert("Error inserting data: Duplicate vehicle in that category.");
@@ -56,5 +57,11 @@
     <!-- Add Vehicle Link -->
     <br><br>
     <a href="../controller/add_vehicle_view.php">Add Vehicle</a>
+
+    <!-- Include the script tag for showErrorPopup -->
+    <script>
+        // Call the showErrorPopup function if needed
+        // showErrorPopup();
+    </script>
 </body>
 </html>
