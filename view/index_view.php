@@ -1,4 +1,4 @@
-<!-- index_view.php -->
+<!-- ../view/index_view.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,4 +1,4 @@
-<!-- error.php -->
+<!-- ../controller/error.php -->
 <?php include("../view/header.php") ?>
 
 <h2>Error</h2>

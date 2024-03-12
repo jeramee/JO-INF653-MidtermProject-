@@ -1,3 +1,4 @@
+<!-- ../model/make_db.php -->
 <?php
 include_once('database.php');
 

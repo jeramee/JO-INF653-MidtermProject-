@@ -1,4 +1,4 @@
-<!-- view/header.php -->
+<!-- ../view/header.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>

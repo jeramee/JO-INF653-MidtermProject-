@@ -1,3 +1,4 @@
+<!-- ../view/admin_inventory_view.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,3 +1,4 @@
+<!-- ../view/delete_vehicle_view.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>

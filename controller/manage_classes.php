@@ -1,3 +1,4 @@
+<!-- ../controller/manage_classes.php -->
 <?php
 include_once('../model/database.php');
 include_once('../model/class_db.php');

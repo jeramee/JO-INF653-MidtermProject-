@@ -1,3 +1,4 @@
+<!-- ../controller/delete_vehicle.php -->
 <?php
 include('../model/database.php');
 
