@@ -3,80 +3,62 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// Include necessary files
 include_once('../model/database.php');
-include_once('../model/item_db.php');
-include_once('../model/category_db.php');
+include_once('../model/class_db.php');
+include_once('../model/make_db.php');
+include_once('../model/type_db.php');
+include_once('../model/vehicle_db.php');
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Handle form submissions
-    if (isset($_POST['removeItemNum'])) {
-        $itemNum = $_POST['removeItemNum'];
-        echo "Before removing item: $itemNum";
+    if (isset($_POST['removeVehicleId'])) {
+        $vehicleId = $_POST['removeVehicleId'];
 
-        // Attempt to remove the item
-        if (removeToDoItem($GLOBALS['conn'], $itemNum)) {
-            echo "Item successfully removed.";
+        // Attempt to remove the vehicle
+        if (removeVehicle($GLOBALS['conn'], $vehicleId)) {
+            echo "Vehicle successfully removed.";
         } else {
-            echo "Error removing item.";
+            echo "Error removing vehicle.";
         }
 
         // Redirect to index.php to display the updated list
-        header("Location: ../controller/index.php");
+        header("Location: index.php");
         exit();
     }
 
-    if (isset($_POST['category_id'])) {
+    if (isset($_POST['make']) && isset($_POST['type']) && isset($_POST['class']) && isset($_POST['year']) && isset($_POST['price']) && isset($_POST['description'])) {
         // Extract form data
-        $category_id = $_POST['category_id'];
-
-        // Redirect to index.php with the selected category
-        header("Location: ../controller/index.php?category_id=$category_id");
-        exit();
-    }
-}
-
-// Get categories for the select dropdown
-$categories = getCategories($GLOBALS['conn']);
-
-// Get the selected category ID (if any)
-$category_id = isset($_GET['category_id']) ? $_GET['category_id'] : null;
-
-// Get to-do items based on the selected category
-$toDoItems = getToDoItems($GLOBALS['conn'], $category_id);
-
-// Display the form and to-do list
-include('../view/index_view.php');
-
-// Function to handle form submission
-function handleFormSubmission() {
-    if (isset($_POST['title']) && isset($_POST['description']) && isset($_POST['category_id'])) {
-        // Extract form data
-        $title = $_POST['title'];
+        $make = $_POST['make'];
+        $type = $_POST['type'];
+        $class = $_POST['class'];
+        $year = $_POST['year'];
+        $price = $_POST['price'];
         $description = $_POST['description'];
-        $category_id = $_POST['category_id'];
 
         // Validate and sanitize input
-        try {
-            // Insert into the database
-            addToDoItem($GLOBALS['conn'], $title, $description, $category_id);
+        // You may need to perform additional validation here
 
-            // Redirect back to add_view.php after adding a new item
-            header("Location: ../view/add_view.php");
-            exit();
-        } catch (PDOException $e) {
-            // Check for duplicate entry error (error code 1062)
-            if ($e->getCode() == '23000' && strpos($e->getMessage(), '1062') !== false) {
-                // Display custom error message for duplicate entry
-                echo "Error: Duplicate item in that category. Please enter a unique item.";
-            } else {
-                // Display general error message for other exceptions
-                echo "Error inserting data: " . $e->getMessage();
-            }
-            exit();
+        // Insert vehicle into the database
+        if (addVehicle($GLOBALS['conn'], $make, $type, $class, $year, $price, $description)) {
+            echo "Vehicle successfully added.";
+        } else {
+            echo "Error adding vehicle.";
         }
+
+        // Redirect back to index.php after adding a new vehicle
+        header("Location: index.php");
+        exit();
     }
 }
+
+// Get vehicles from the database
+$vehicles = getVehicles($GLOBALS['conn']);
+
+// Display the form and vehicle list
+include('../view/index_view.php');
+
 ?>
 
 <!-- index_view.php -->
@@ -86,37 +68,52 @@ function handleFormSubmission() {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../view/css/main.css"> <!-- Include main.css -->
-    <title>Add Item</title>
+    <title>Add Vehicle</title>
 </head>
 <body>
-    <h1>Add Item</h1>
+    <h1>Add Vehicle</h1>
 
     <!-- Form elements -->
-    <form action="../controller/add.php" method="post">
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required>
+    <form action="../controller/index.php" method="post">
+        <label for="make">Make:</label>
+        <input type="text" id="make" name="make" required>
+        <br>
+
+        <label for="type">Type:</label>
+        <input type="text" id="type" name="type" required>
+        <br>
+
+        <label for="class">Class:</label>
+        <input type="text" id="class" name="class" required>
+        <br>
+
+        <label for="year">Year:</label>
+        <input type="text" id="year" name="year" required>
+        <br>
+
+        <label for="price">Price:</label>
+        <input type="text" id="price" name="price" required>
         <br>
 
         <label for="description">Description:</label>
         <textarea id="description" name="description" required></textarea>
         <br>
 
-        <label for="category_id">Category:</label>
-        <select name="category_id" id="category_id">
-            <?php foreach ($categories as $category) : ?>
-                <option value="<?php echo $category['category_id']; ?>">
-                    <?php echo $category['category_name']; ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-        <br>
-
-        <button type="submit">Add Item</button>
+        <button type="submit">Add Vehicle</button>
     </form>
 
-    <!-- Additional content -->
-    <p>Enter the details for the new item and click "Add Item" to add it to your ToDo List.</p>
-    <br><br>
-    <p>You can also <a href="../controller/index.php">go back to the ToDo List</a>.</p>
+    <!-- Vehicle list -->
+    <h2>Vehicle List</h2>
+    <ul>
+        <?php foreach ($vehicles as $vehicle) : ?>
+            <li>
+                <?php echo $vehicle['make'] . ' ' . $vehicle['type'] . ' ' . $vehicle['year']; ?>
+                <form action="../controller/index.php" method="post" style="display: inline;">
+                    <input type="hidden" name="removeVehicleId" value="<?php echo $vehicle['id']; ?>">
+                    <button type="submit">Remove</button>
+                </form>
+            </li>
+        <?php endforeach; ?>
+    </ul>
 </body>
 </html>
