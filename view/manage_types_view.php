@@ -36,8 +36,6 @@
         </ul>
     </section>
 
-    <footer>
-        <p>© <?php echo date('Y'); ?> Your Type Management App</p>
-    </footer>
+
 </body>
 </html>

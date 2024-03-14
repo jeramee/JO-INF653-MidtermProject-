@@ -11,7 +11,7 @@
 </head>
 <body>
     <!-- Include the header -->
-    <?php include('header.php'); ?>
+    <?php include('public_header.php'); ?>
 
     <header>
         <h1>Public Inventory</h1>

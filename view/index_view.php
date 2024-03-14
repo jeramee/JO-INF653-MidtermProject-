@@ -1,4 +1,3 @@
-<!-- ../view/index_view.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,10 +52,6 @@
         echo "<p>No vehicles in this class yet.</p>";
     }
     ?>
-
-    <!-- Add Vehicle Link -->
-    <br><br>
-    <a href="../controller/add_vehicle_view.php">Add Vehicle</a>
 
     <!-- Include the script tag for showErrorPopup -->
     <script>

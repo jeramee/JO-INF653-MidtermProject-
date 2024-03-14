@@ -36,8 +36,5 @@
         </ul>
     </section>
 
-    <footer>
-        <p>© <?php echo date('Y'); ?> Your Make Management App</p>
-    </footer>
 </body>
 </html>
