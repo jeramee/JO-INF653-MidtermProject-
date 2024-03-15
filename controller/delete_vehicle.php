@@ -15,12 +15,12 @@ try {
         $stmt->bindParam(':id', $vehicleId);
         $stmt->execute();
 
-        // Redirect back to the admin page after removing the vehicle
-        header("Location: admin/index.php");
+        // Redirect back to the controller page after removing the vehicle
+        header("Location: delete_vehicle.php");
         exit();
     } else {
-        // Redirect to the admin page if 'id' parameter is not set
-        header("Location: admin/index.php");
+        // Redirect to the controller page if 'id' parameter is not set
+        header("Location: delete_vehicle.php");
         exit();
     }
 
@@ -28,3 +28,4 @@ try {
     echo "Error: " . $e->getMessage();
 }
 ?>
+
