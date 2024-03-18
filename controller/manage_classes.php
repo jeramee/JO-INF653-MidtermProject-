@@ -1,12 +1,11 @@
-<!-- ../controller/manage_classes.php -->
 <?php
 include_once('../model/database.php');
 include_once('../model/class_db.php');
 
-// Function to get all data from the specified table
-function getAllData($conn, $tableName) {
+// Function to get all data from the vehicle_inventory table
+function getAllData($conn) {
     try {
-        $query = "SELECT * FROM $tableName"; // Use the provided table name
+        $query = "SELECT * FROM vehicle_inventory"; // Select all columns from the vehicle_inventory table
         $statement = $conn->prepare($query);
         $statement->execute();
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -14,27 +13,19 @@ function getAllData($conn, $tableName) {
         return $data;
     } catch (PDOException $e) {
         // Handle the exception appropriately, such as logging the error or displaying a user-friendly message
-        throw new PDOException("Error fetching data from $tableName: " . $e->getMessage());
+        throw new PDOException("Error fetching data from vehicle_inventory: " . $e->getMessage());
     }
 }
 
 // Variable to store data
-$classes = [];
-$makes = [];
-$prices = [];
-$types = [];
-$years = [];
+$vehicles = [];
 
-// Attempt to fetch data from each table
+// Attempt to fetch data from the vehicle_inventory table
 try {
-    $classes = getAllData($GLOBALS['conn'], 'vehicle_classes');
-    $makes = getAllData($GLOBALS['conn'], 'vehicle_makes');
-    $prices = getAllData($GLOBALS['conn'], 'vehicle_price');
-    $types = getAllData($GLOBALS['conn'], 'vehicle_types');
-    $years = getAllData($GLOBALS['conn'], 'vehicle_year');
+    $vehicles = getAllData($GLOBALS['conn']);
 } catch (PDOException $e) {
     // Display a verbose warning and error explanation
-    echo "<div style='color: red;'><strong>Error:</strong> An error occurred while fetching data from the database. Please check the database connection and make sure the tables exist. <br>";
+    echo "<div style='color: red;'><strong>Error:</strong> An error occurred while fetching data from the database. Please check the database connection and make sure the table exists. <br>";
     echo "Error Message: " . $e->getMessage() . "</div><br>";
 }
 ?>
@@ -86,9 +77,18 @@ try {
 
         <!-- Navigation links -->
         <ul>
-            <li><a href="#">View All Makes</a></li>
-            <li><a href="#">Sedan</a></li>
-            <li><a href="#">View All Classes</a></li>
+            <li>
+                <!-- Include the ../view/manage_makes_view.php file -->
+                <?php include_once('../view/manage_makes_view.php'); ?>
+            </li>
+            <li>
+                <!-- Include the ../view/manage_types_view.php file -->
+                <?php include_once('../view/manage_types_view.php'); ?>
+            </li>
+            <li>
+                <!-- Include the manage_classes_view.php file -->
+                <?php include_once('../view/manage_classes_view.php'); ?>
+            </li>
         </ul>
 
         <!-- Sorting options -->
@@ -115,14 +115,14 @@ try {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($classes as $class) : ?>
+                <?php foreach ($vehicles as $vehicle) : ?>
                     <tr>
-                        <td><?php echo $years[$class['year_id']]['year'] ?? 'Undefined'; ?></td>
-                        <td><?php echo $makes[$class['make_id']]['make_name'] ?? 'Undefined'; ?></td>
-                        <td><?php echo $models[$class['model_id']]['model_name'] ?? 'Undefined'; ?></td>
-                        <td><?php echo $types[$class['type_id']]['type_name'] ?? 'Undefined'; ?></td>
-                        <td><?php echo $class['class_name']; ?></td>
-                        <td><?php echo $prices[$class['price_id']]['price'] ?? '$0.00'; ?></td>
+                        <td><?php echo $vehicle['vehicle_year']; ?></td>
+                        <td><?php echo $vehicle['vehicle_make']; ?></td>
+                        <td><?php echo $vehicle['vehicle_model']; ?></td>
+                        <td><?php echo $vehicle['vehicle_type']; ?></td>
+                        <td><?php echo $vehicle['vehicle_class']; ?></td>
+                        <td>$<?php echo $vehicle['vehicle_price']; ?></td>
                         <td>Remove</td>
                     </tr>
                 <?php endforeach; ?>
@@ -136,7 +136,5 @@ try {
         <p><a href="#">View/Edit Vehicle Types</a></p>
         <p><a href="#">View/Edit Vehicle Classes</a></p>
     </div>
-</
-
-
-
+</body>
+</html>

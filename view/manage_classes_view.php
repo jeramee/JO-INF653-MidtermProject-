@@ -1,40 +1,39 @@
 <!-- ../view/manage_classes_view.php -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Classes</title>
-</head>
-<body>
-    <header>
-        <h1>Manage Classes</h1>
-    </header>
+<?php
+include_once('../model/database.php');
+include_once('../model/class_db.php');
 
-    <section>
-        <!-- Your form for managing classes -->
-        <form action="../controller/manage_classes.php" method="post">
-            <label for="class_name">Class Name:</label>
-            <input type="text" id="class_name" name="class_name" required>
-            <button type="submit">Add Class</button>
-        </form>
-    </section>
+// Function to get all classes from the vehicle_class table
+function getAllClasses($conn) {
+    try {
+        $query = "SELECT DISTINCT vehicle_class FROM vehicle_inventory";
+        $statement = $conn->prepare($query);
+        $statement->execute();
+        $classes = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $classes;
+    } catch (PDOException $e) {
+        throw new PDOException("Error fetching classes: " . $e->getMessage());
+    }
+}
 
-    <section>
-        <!-- Display the list of classes -->
-        <ul>
-            <?php if (isset($classes) && is_array($classes)) : ?>
-                <?php foreach ($classes as $class) : ?>
-                    <li>
-                        <?php echo $class['class_name']; ?>
-                        <a href='../controller/remove_class.php?id=<?php echo $class['class_id']; ?>'>Remove</a>
-                    </li>
-                <?php endforeach; ?>
-            <?php else : ?>
-                <p>No classes exist yet.</p>
-            <?php endif; ?>
-        </ul>
-    </section>
+// Variable to store data
+$classes = [];
 
-</body>
-</html>
+// Attempt to fetch data from the vehicle_class table
+try {
+    $classes = getAllClasses($GLOBALS['conn']);
+} catch (PDOException $e) {
+    // Display a verbose warning and error explanation
+    echo "<div style='color: red;'><strong>Error:</strong> An error occurred while fetching data from the database. Please check the database connection and make sure the table exists. <br>";
+    echo "Error Message: " . $e->getMessage() . "</div><br>";
+}
+?>
+
+<!-- Display the dropdown menu for classes -->
+<select>
+    <option value="#" selected disabled>View All Classes</option>
+    <?php foreach ($classes as $class) : ?>
+        <option value="<?php echo $class['vehicle_class']; ?>"><?php echo $class['vehicle_class']; ?></option>
+    <?php endforeach; ?>
+</select>

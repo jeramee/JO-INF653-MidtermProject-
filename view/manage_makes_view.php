@@ -1,40 +1,39 @@
 <!-- ../view/manage_makes_view.php -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Makes</title>
-</head>
-<body>
-    <header>
-        <h1>Manage Makes</h1>
-    </header>
+<?php
+include_once('../model/database.php');
+include_once('../model/class_db.php');
 
-    <section>
-        <!-- Your form for managing makes -->
-        <form action="../controller/manage_makes.php" method="post">
-            <label for="make_name">Make Name:</label>
-            <input type="text" id="make_name" name="make_name" required>
-            <button type="submit">Add Make</button>
-        </form>
-    </section>
+// Function to get all makes from the vehicle_inventory table
+function getAllMakes($conn) {
+    try {
+        $query = "SELECT DISTINCT vehicle_make FROM vehicle_inventory"; // Select distinct makes from the vehicle_inventory table
+        $statement = $conn->prepare($query);
+        $statement->execute();
+        $makes = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $makes;
+    } catch (PDOException $e) {
+        throw new PDOException("Error fetching makes: " . $e->getMessage());
+    }
+}
 
-    <section>
-        <!-- Display the list of makes -->
-        <ul>
-            <?php if (isset($makes) && is_array($makes)) : ?>
-                <?php foreach ($makes as $make) : ?>
-                    <li>
-                        <?php echo $make['make_name']; ?>
-                        <a href='../controller/remove_make.php?id=<?php echo $make['make_id']; ?>'>Remove</a>
-                    </li>
-                <?php endforeach; ?>
-            <?php else : ?>
-                <p>No makes exist yet.</p>
-            <?php endif; ?>
-        </ul>
-    </section>
+// Variable to store data
+$makes = [];
 
-</body>
-</html>
+// Attempt to fetch data from the vehicle_inventory table
+try {
+    $makes = getAllMakes($GLOBALS['conn']);
+} catch (PDOException $e) {
+    // Display a verbose warning and error explanation
+    echo "<div style='color: red;'><strong>Error:</strong> An error occurred while fetching data from the database. Please check the database connection and make sure the table exists. <br>";
+    echo "Error Message: " . $e->getMessage() . "</div><br>";
+}
+?>
+
+<!-- Display the dropdown menu for makes -->
+<select>
+    <option value="#" selected disabled>View All Makes</option> <!-- Default value -->
+    <?php foreach ($makes as $make) : ?>
+        <option value="<?php echo $make['vehicle_make']; ?>"><?php echo $make['vehicle_make']; ?></option>
+    <?php endforeach; ?>
+</select>
