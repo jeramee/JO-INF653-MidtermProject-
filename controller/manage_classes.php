@@ -1,3 +1,4 @@
+<!-- ../controller/manage_classes.php -->
 <?php
 include_once('../model/database.php');
 include_once('../model/class_db.php');
@@ -29,6 +30,20 @@ try {
     echo "Error Message: " . $e->getMessage() . "</div><br>";
 }
 ?>
+
+<!-- PHP code to filter vehicles based on the selected class -->
+<?php
+// Filter vehicles based on the selected class
+$selectedClass = isset($_GET['class']) ? $_GET['class'] : null;
+$filteredVehicles = array_filter($vehicles, function($vehicle) use ($selectedClass) {
+    // If no class is selected, include all vehicles by default
+    if ($selectedClass === null) {
+        return true;
+    }
+    return $vehicle['vehicle_class'] === $selectedClass;
+});
+?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -115,7 +130,7 @@ try {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($vehicles as $vehicle) : ?>
+                <?php foreach ($filteredVehicles as $vehicle) : ?>
                     <tr>
                         <td><?php echo $vehicle['vehicle_year']; ?></td>
                         <td><?php echo $vehicle['vehicle_make']; ?></td>
@@ -136,5 +151,38 @@ try {
         <p><a href="#">View/Edit Vehicle Types</a></p>
         <p><a href="#">View/Edit Vehicle Classes</a></p>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var classSelect = document.getElementById('classSelect');
+            if (classSelect) {
+                classSelect.addEventListener('change', function() {
+                    var selectedClass = this.value;
+
+                    // Create element to display the selected class
+                    var echoElement = document.createElement('p');
+                    echoElement.textContent = 'Selected Class: ' + selectedClass;
+                    document.body.appendChild(echoElement);
+
+                    // Send AJAX request to fetch filtered vehicles
+                    var xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            if (xhr.status === 200) {
+                                document.getElementById('vehicleList').innerHTML = xhr.responseText;
+                            } else {
+                                console.error('Failed to fetch filtered vehicles. Status:', xhr.status);
+                            }
+                        }
+                    };
+                    xhr.open('GET', '../controller/filter_vehicles.php?class=' + selectedClass, true);
+                    xhr.send();
+                });
+            } else {
+                console.error('Element with ID "classSelect" not found.');
+            }
+        });
+    </script>
+
 </body>
 </html>
