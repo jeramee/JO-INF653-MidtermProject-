@@ -112,42 +112,49 @@ try {
 $selectedClass = isset($_GET['class']) ? $_GET['class'] : null;
 $selectedType = isset($_GET['type']) ? $_GET['type'] : null;
 $selectedMake = isset($_GET['make']) ? $_GET['make'] : null;
-$filteredVehicles = [];
+$filteredVehicles = $vehicles; // Start with all vehicles
 
+// Apply filters sequentially
 // Filter based on class
-if ($selectedClass !== null) {
-    $filteredVehicles = array_filter($vehicles, function($vehicle) use ($selectedClass) {
+if ($selectedClass !== null && $selectedClass !== '#') {
+    $filteredVehicles = array_filter($filteredVehicles, function($vehicle) use ($selectedClass) {
         return $vehicle['vehicle_class'] === $selectedClass;
     });
-} else {
-    // If no class is selected, include all vehicles by default
-    $filteredVehicles = $vehicles;
 }
 
 // Filter based on type
-if ($selectedType !== null) {
+if ($selectedType !== null && $selectedType !== '#') {
     $filteredVehicles = array_filter($filteredVehicles, function($vehicle) use ($selectedType) {
         return $vehicle['vehicle_type'] === $selectedType;
     });
-} else {
-    // If no type is selected, preserve previous filtering or include all vehicles by default
-    if (empty($filteredVehicles)) {
-        $filteredVehicles = $vehicles; // If no previous filtering, include all vehicles
-    }
 }
 
 // Filter based on make
-if ($selectedMake !== null) {
+if ($selectedMake !== null && $selectedMake !== '#') {
     $filteredVehicles = array_filter($filteredVehicles, function($vehicle) use ($selectedMake) {
         return $vehicle['vehicle_make'] === $selectedMake;
     });
-} else {
-    // If no make is selected, preserve previous filtering or include all vehicles by default
-    if (empty($filteredVehicles)) {
-        $filteredVehicles = $vehicles; // If no previous filtering, include all vehicles
-    }
 }
 
+// Sorting options
+$sorting = isset($_POST['sorting']) ? $_POST['sorting'] : null;
+
+// Function to compare vehicles based on price
+function comparePrice($a, $b) {
+    return $a['vehicle_price'] - $b['vehicle_price'];
+}
+
+// Function to compare vehicles based on year
+function compareYear($a, $b) {
+    return $a['vehicle_year'] - $b['vehicle_year'];
+}
+
+// Sort filtered vehicles based on selected sorting option
+if ($sorting === 'price') {
+    usort($filteredVehicles, 'comparePrice');
+} elseif ($sorting === 'year') {
+    usort($filteredVehicles, 'compareYear');
+}
 ?>
 
 <!DOCTYPE html>
@@ -200,18 +207,18 @@ if ($selectedMake !== null) {
             <li>
                 <!-- Display the dropdown menu for types -->
                 <select id="typeSelect">
-                    <option value="#" selected disabled>View All Types</option> <!-- Default value -->
+                    <option value="#" <?php if ($selectedType === null) echo 'selected'; ?>>View All Types</option> <!-- Default value -->
                     <?php foreach ($types as $type) : ?>
-                        <option value="<?php echo $type['vehicle_type']; ?>"><?php echo $type['vehicle_type']; ?></option>
+                        <option value="<?php echo $type['vehicle_type']; ?>" <?php if ($selectedType === $type['vehicle_type']) echo 'selected'; ?>><?php echo $type['vehicle_type']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </li>
             <li>
                 <!-- Display the dropdown menu for makes -->
                 <select id="makeSelect">
-                    <option value="#" selected disabled>View All Makes</option> <!-- Default value -->
+                    <option value="#" <?php if ($selectedMake === null) echo 'selected'; ?>>View All Makes</option> <!-- Default value -->
                     <?php foreach ($makes as $make) : ?>
-                        <option value="<?php echo $make['vehicle_make']; ?>"><?php echo $make['vehicle_make']; ?></option>
+                        <option value="<?php echo $make['vehicle_make']; ?>" <?php if ($selectedMake === $make['vehicle_make']) echo 'selected'; ?>><?php echo $make['vehicle_make']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </li>
@@ -219,14 +226,15 @@ if ($selectedMake !== null) {
                 <!-- Display the dropdown menu for classes -->
                 <form id="classForm">
                     <select id="classSelect">
-                        <option value="#" selected disabled>View All Classes</option>
+                        <option value="#" <?php if ($selectedClass === null) echo 'selected'; ?>>View All Classes</option>
                         <?php foreach ($classes as $class) : ?>
-                            <option value="<?php echo $class['vehicle_class']; ?>"><?php echo $class['vehicle_class']; ?></option>
+                            <option value="<?php echo $class['vehicle_class']; ?>" <?php if ($selectedClass === $class['vehicle_class']) echo 'selected'; ?>><?php echo $class['vehicle_class']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </form>
             </li>
         </ul>
+
 
         <!-- Sorting options -->
         <form action="#" method="post">
@@ -261,7 +269,12 @@ if ($selectedMake !== null) {
                         <td><?php echo $vehicle['vehicle_type']; ?></td>
                         <td><?php echo $vehicle['vehicle_class']; ?></td>
                         <td>$<?php echo $vehicle['vehicle_price']; ?></td>
-                        <td>Remove</td>
+                        <td>
+                            <form action="remove_vehicle.php" method="post">
+                                <input type="hidden" name="vehicle_id" value="<?php echo $vehicle['vehicle_id']; ?>">
+                                <button type="submit">Remove</button>
+                            </form>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -275,32 +288,35 @@ if ($selectedMake !== null) {
         <p><a href="#">View/Edit Vehicle Classes</a></p>
     </div>
 
-    <!-- JavaScript to redirect to manage_classes_view.php with the selected class -->
     <script>
+        // JavaScript to redirect to manage_classes_view.php with the selected class, type, and make
         document.getElementById('classSelect').addEventListener('change', function() {
             var selectedClass = this.value;
-            // Redirect to the correct location: view/manage_classes_view.php with the selected class as a parameter
-            window.location.href = '../view/manage_classes_view.php?class=' + encodeURIComponent(selectedClass);
+            var selectedType = document.getElementById('typeSelect').value;
+            var selectedMake = document.getElementById('makeSelect').value;
+            // Redirect to the correct location: view/manage_classes_view.php with the selected parameters
+            window.location.href = '../view/manage_classes_view.php?class=' + encodeURIComponent(selectedClass) + '&type=' + encodeURIComponent(selectedType) + '&make=' + encodeURIComponent(selectedMake);
         });
-    </script>
 
-    <!-- JavaScript to redirect to manage_types_view.php with the selected type -->
-    <script>
+        // JavaScript to redirect to manage_types_view.php with the selected type, class, and make
         document.getElementById('typeSelect').addEventListener('change', function() {
             var selectedType = this.value;
-            // Redirect to the correct location: view/manage_types_view.php with the selected type as a parameter
-            window.location.href = '../view/manage_types_view.php?type=' + encodeURIComponent(selectedType);
+            var selectedClass = document.getElementById('classSelect').value;
+            var selectedMake = document.getElementById('makeSelect').value;
+            // Redirect to the correct location: view/manage_types_view.php with the selected parameters
+            window.location.href = '../view/manage_types_view.php?type=' + encodeURIComponent(selectedType) + '&class=' + encodeURIComponent(selectedClass) + '&make=' + encodeURIComponent(selectedMake);
+        });
+
+        // JavaScript to redirect to manage_makes_view.php with the selected make, class, and type
+        document.getElementById('makeSelect').addEventListener('change', function() {
+            var selectedMake = this.value;
+            var selectedClass = document.getElementById('classSelect').value;
+            var selectedType = document.getElementById('typeSelect').value;
+            // Redirect to the correct location: view/manage_makes_view.php with the selected parameters
+            window.location.href = '../view/manage_makes_view.php?make=' + encodeURIComponent(selectedMake) + '&class=' + encodeURIComponent(selectedClass) + '&type=' + encodeURIComponent(selectedType);
         });
     </script>
 
-    <!-- JavaScript to redirect to manage_makes_view.php with the selected make -->
-    <script>
-        document.getElementById('makeSelect').addEventListener('change', function() {
-            var selectedMake = this.value;
-            // Redirect to the correct location: view/manage_makes_view.php with the selected make as a parameter
-            window.location.href = '../view/manage_makes_view.php?make=' + encodeURIComponent(selectedMake);
-        });
-    </script>
 
 </body>
 </html>
