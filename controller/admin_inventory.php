@@ -304,9 +304,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
         <!-- Additional links -->
         <p><a href="#">View Full Vehicle List</a></p>
         <p><a href="../view/add_vehicle_view.php">Click here to add a vehicle</a></p>
-        <p><a href="#">View/Edit Vehicle Makes</a></p>
-        <p><a href="#">View/Edit Vehicle Types</a></p>
-        <p><a href="#">View/Edit Vehicle Classes</a></p>
+        <p><a href="../view/add_make_view.php">View/Edit Vehicle Makes</a></p>
+        <p><a href="../view/add_type_view.php">View/Edit Vehicle Types</a></p>
+        <p><a href="../view/add_class_view.php">View/Edit Vehicle Classes</a></p>
     </div>
 
     <script>
