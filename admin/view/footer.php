@@ -1,6 +1,6 @@
-<!-- ../view/footer.php -->
+<!-- ../admin/view/footer.php -->
 <footer>
-    <p>© <?php echo date('Y'); ?> Your Class Management App</p>
+    <p>© <?php echo date('Y'); ?> Zippy Used Autos</p>
 </footer>
 </main>
 

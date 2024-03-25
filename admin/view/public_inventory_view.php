@@ -1,4 +1,16 @@
 <!-- ../view/public_inventory_view.php -->
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+try {
+    // Include the admin header
+    require_once "../view/admin_header.php";
+} catch (Exception $e) {
+    echo "Error loading admin header: " . $e->getMessage();
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,7 +44,10 @@
         <?php include('manage_types_view.php'); ?>
     </section>
 
-    <!-- Include the footer -->
-    <?php include('footer.php'); ?>
+    </tbody>
+</table>
+<!-- Include the footer -->
+<?php require "../view/footer.php"; ?>
+
 </body>
 </html>

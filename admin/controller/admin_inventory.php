@@ -2,6 +2,10 @@
 <?php
 include_once('../model/database.php');
 include_once('../model/class_db.php');
+include_once('../model/make_db.php');
+include_once('../model/type_db.php');
+include_once('../model/vehicle_db.php');
+
 
 // Function to get all makes from the vehicle_make table
 function getAllMakes($conn) {
@@ -78,27 +82,40 @@ $selectedType = isset($_GET['type']) ? $_GET['type'] : null;
 $selectedMake = isset($_GET['make']) ? $_GET['make'] : null;
 $filteredVehicles = $vehicles; // Start with all vehicles
 
+// Call the getAllTypes function to fetch types from the database
+$types = getAllTypes($conn);
+
+// Call the getAllMakes function to fetch makes from the database
+$makes = getAllMakes($conn);
+
+// Call the getAllClasses function to fetch classes from the database
+$classes = getAllClasses($conn);
+
+// Call the getAllClasses function to fetch classes from the database
+$vehicle = getAllData($conn);
+
 // Apply filters sequentially
 // Filter based on class
 if ($selectedClass !== null && $selectedClass !== '#') {
     $filteredVehicles = array_filter($filteredVehicles, function($vehicle) use ($selectedClass) {
-        return $vehicle['class_id'] == $selectedClass;
+        return $vehicle['class_id'] === $selectedClass;
     });
 }
 
 // Filter based on type
 if ($selectedType !== null && $selectedType !== '#') {
     $filteredVehicles = array_filter($filteredVehicles, function($vehicle) use ($selectedType) {
-        return $vehicle['type_id'] == $selectedType;
+        return $vehicle['type_id'] === $selectedType;
     });
 }
 
 // Filter based on make
 if ($selectedMake !== null && $selectedMake !== '#') {
     $filteredVehicles = array_filter($filteredVehicles, function($vehicle) use ($selectedMake) {
-        return $vehicle['make_id'] == $selectedMake;
+        return $vehicle['make_id'] === $selectedMake;
     });
 }
+
 
 // Sorting options
 $sorting = isset($_POST['sorting']) ? $_POST['sorting'] : null;
@@ -123,21 +140,20 @@ if ($sorting === 'price') {
 // Handle form submission to remove vehicle
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
     $vehicle_id = $_POST['vehicle_id'];
-
     try {
         // Prepare and execute the DELETE query
         $query = "DELETE FROM vehicle_inventory WHERE vehicle_id = :vehicle_id";
         $statement = $conn->prepare($query);
         $statement->bindParam(':vehicle_id', $vehicle_id);
         $statement->execute();
-
+        
         // Redirect back to the same page after removing the vehicle
         header("Location: admin_inventory.php");
         exit();
     } catch (PDOException $e) {
         // Handle any errors if the DELETE query fails
-        echo "<div style='color: red;'><strong>Error:</strong> An error occurred while removing the vehicle. Please try again. <br>";
-        echo "Error Message: " . $e->getMessage() . "</div><br>";
+        echo "Error: An error occurred while removing the vehicle. Please try again.";
+        echo "Error Message: " . $e->getMessage();
     }
 }
 
@@ -194,7 +210,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
                 <select id="typeSelect">
                     <option value="#" <?php if ($selectedType === null) echo 'selected'; ?>>View All Types</option> <!-- Default value -->
                     <?php foreach ($types as $type) : ?>
-                        <option value="<?php echo $type['type_id']; ?>" <?php if ($selectedType === $type['type_id']) echo 'selected'; ?>><?php echo $type['vehicle_type']; ?></option>
+                        <option value="<?php echo $type['type_id']; ?>" <?php if ($selectedType === $type['type_id']) echo 'selected'; ?>><?php echo $type['type_name']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </li>
@@ -203,7 +219,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
                 <select id="makeSelect">
                     <option value="#" <?php if ($selectedMake === null) echo 'selected'; ?>>View All Makes</option> <!-- Default value -->
                     <?php foreach ($makes as $make) : ?>
-                        <option value="<?php echo $make['make_id']; ?>" <?php if ($selectedMake === $make['make_id']) echo 'selected'; ?>><?php echo $make['vehicle_make']; ?></option>
+                        <option value="<?php echo $make['make_id']; ?>" <?php if ($selectedMake === $make['make_id']) echo 'selected'; ?>><?php echo $make['make_name']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </li>
@@ -213,7 +229,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
                     <select id="classSelect">
                         <option value="#" <?php if ($selectedClass === null) echo 'selected'; ?>>View All Classes</option>
                         <?php foreach ($classes as $class) : ?>
-                            <option value="<?php echo $class['class_id']; ?>" <?php if ($selectedClass === $class['class_id']) echo 'selected'; ?>><?php echo $class['vehicle_class']; ?></option>
+                            <option value="<?php echo $class['class_id']; ?>" <?php if ($selectedClass === $class['class_id']) echo 'selected'; ?>><?php echo $class['class_name']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </form>

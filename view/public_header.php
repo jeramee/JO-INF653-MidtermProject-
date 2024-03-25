@@ -9,5 +9,5 @@
 </head>
 <body>
 <header>
-    <h1>Zippy Used Autos</h1>
+    <h1>Zippy Used Autos - Public Page</h1>
 </header>

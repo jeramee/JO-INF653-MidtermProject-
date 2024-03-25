@@ -2,10 +2,10 @@
 <?php
 if (!function_exists('connectToDatabase')) {
     function connectToDatabase() {
-        $host = '34.42.41.35'; // Replace with the public IP address of your Cloud SQL instance
+        $host = 'localhost';
         $dbname = 'zippyusedautos'; // Updated database name
-        $username = 'jeramee'; // Replace with your actual username
-        $password = '>??mzY6Na8VZEuT'; // Replace with your actual password
+        $username = 'root';
+        $password = ''; // Use your actual password if set
 
         try {
             $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);

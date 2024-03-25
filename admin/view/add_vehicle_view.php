@@ -8,11 +8,14 @@ error_reporting(E_ALL);
 // Include database connection and necessary functions
 include_once('../model/database.php');
 include_once('../model/class_db.php');
+include_once('../model/make_db.php');
+include_once('../model/type_db.php');
+include_once('../model/vehicle_db.php');
 
 // Function to get all classes from the vehicle_class table
 function getAllClasses($conn) {
     try {
-        $query = "SELECT DISTINCT vehicle_class FROM vehicle_inventory";
+        $query = "SELECT DISTINCT class_id, class_name FROM vehicle_class";
         $statement = $conn->prepare($query);
         $statement->execute();
         $classes = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -26,7 +29,7 @@ function getAllClasses($conn) {
 // Function to get all makes from the vehicle_inventory table
 function getAllMakes($conn) {
     try {
-        $query = "SELECT DISTINCT vehicle_make FROM vehicle_inventory";
+        $query = "SELECT DISTINCT make_id, make_name FROM vehicle_make";        
         $statement = $conn->prepare($query);
         $statement->execute();
         $makes = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -40,7 +43,7 @@ function getAllMakes($conn) {
 // Function to get all types from the vehicle_inventory table
 function getAllTypes($conn) {
     try {
-        $query = "SELECT DISTINCT vehicle_type FROM vehicle_inventory";
+        $query = "SELECT DISTINCT type_id, type_name FROM vehicle_type";        
         $statement = $conn->prepare($query);
         $statement->execute();
         $types = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -63,13 +66,13 @@ try {
     
     // Sort classes, makes, and types alphabetically
     usort($classes, function($a, $b) {
-        return strcmp($a['vehicle_class'], $b['vehicle_class']);
+        return strcmp($a['class_id'], $b['class_id']);
     });
     usort($makes, function($a, $b) {
-        return strcmp($a['vehicle_make'], $b['vehicle_make']);
+        return strcmp($a['make_id'], $b['make_id']);
     });
     usort($types, function($a, $b) {
-        return strcmp($a['vehicle_type'], $b['vehicle_type']);
+        return strcmp($a['type_id'], $b['type_id']);
     });
 } catch (PDOException $e) {
     // Display error message if fetching fails
@@ -81,7 +84,7 @@ try {
 function addVehicle($conn, $year, $make, $model, $type, $class, $price) {
     try {
         // Prepare and execute the INSERT query
-        $query = "INSERT INTO vehicle_inventory (vehicle_year, vehicle_make, vehicle_model, vehicle_type, vehicle_class, vehicle_price) VALUES (:year, :make, :model, :type, :class, :price)";
+        $query = "INSERT INTO vehicle_inventory (vehicle_year, make_id, vehicle_model, type_id, class_id, vehicle_price) VALUES (:year, :make, :model, :type, :class, :price)";
         $statement = $conn->prepare($query);
         $statement->bindParam(':year', $year);
         $statement->bindParam(':make', $make);
@@ -118,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_vehicle'])) {
 
     try {
         // Prepare and execute the SQL insert statement
-        $query = "INSERT INTO vehicle_inventory (vehicle_year, vehicle_make, vehicle_model, vehicle_type, vehicle_class, vehicle_price) 
+        $query = "INSERT INTO vehicle_inventory (vehicle_year, make_id, vehicle_model, type_id, class_id, vehicle_price) 
                   VALUES (:year, :make, :model, :type, :class, :price)";
         $statement = $conn->prepare($query);
         $statement->bindParam(':year', $year);
@@ -167,15 +170,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_vehicle'])) {
         <label for="make">Make:</label>
         <select id="make" name="make" required>
             <?php foreach ($makes as $make) : ?>
-                <option value="<?php echo $make['vehicle_make']; ?>"><?php echo $make['vehicle_make']; ?></option>
+                <?php if(isset($make['make_name'])): ?>
+                    <option value="<?php echo $make['make_id']; ?>"><?php echo $make['make_name']; ?></option>
+                <?php else: ?>
+                    <!-- Debugging -->
+                    <option value="">No Make Name Found</option>
+                <?php endif; ?>
             <?php endforeach; ?>
         </select>
         <br>
 
+
         <label for="type">Type:</label>
         <select id="type" name="type" required>
             <?php foreach ($types as $type) : ?>
-                <option value="<?php echo $type['vehicle_type']; ?>"><?php echo $type['vehicle_type']; ?></option>
+                <option value="<?php echo $type['type_id']; ?>"><?php echo $type['type_name']; ?></option>
             <?php endforeach; ?>
         </select>
         <br>
@@ -183,7 +192,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_vehicle'])) {
         <label for="class">Class:</label>
         <select id="class" name="class" required>
             <?php foreach ($classes as $class) : ?>
-                <option value="<?php echo $class['vehicle_class']; ?>"><?php echo $class['vehicle_class']; ?></option>
+                <option value="<?php echo $class['class_id']; ?>"><?php echo $class['class_name']; ?></option>
             <?php endforeach; ?>
         </select>
         <br>

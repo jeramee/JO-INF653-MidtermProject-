@@ -3,82 +3,85 @@
 include_once('../model/database.php');
 include_once('../model/class_db.php');
 
-// Function to get all classes from the vehicle_class table
-function getAllClasses($conn) {
-    try {
-        $query = "SELECT DISTINCT vehicle_class FROM vehicle_inventory";
-        $statement = $conn->prepare($query);
-        $statement->execute();
-        $classes = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $statement->closeCursor();
-        return $classes;
-    } catch (PDOException $e) {
-        throw new PDOException("Error fetching classes: " . $e->getMessage());
-    }
-}
-
-// Variable to store data
-$classes = [];
-
-// Attempt to fetch data from the vehicle_class table
-try {
-    $classes = getAllClasses($GLOBALS['conn']);
-} catch (PDOException $e) {
-    // Display a verbose warning and error explanation
-    echo "<div style='color: red;'><strong>Error:</strong> An error occurred while fetching classes. Please check the database connection and make sure the table exists. <br>";
-    echo "Error Message: " . $e->getMessage() . "</div><br>";
-}
-
-// Function to get all makes from the vehicle_inventory table
-function getAllMakes($conn) {
-    try {
-        $query = "SELECT DISTINCT vehicle_make FROM vehicle_inventory"; // Select distinct makes from the vehicle_inventory table
-        $statement = $conn->prepare($query);
-        $statement->execute();
-        $makes = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $statement->closeCursor();
-        return $makes;
-    } catch (PDOException $e) {
-        throw new PDOException("Error fetching makes: " . $e->getMessage());
-    }
-}
-
-// Variable to store data
-$makes = [];
-
-// Attempt to fetch data from the vehicle_inventory table
-try {
-    $makes = getAllMakes($GLOBALS['conn']);
-} catch (PDOException $e) {
-    // Display a verbose warning and error explanation
-    echo "<div style='color: red;'><strong>Error:</strong> An error occurred while fetching makes. Please check the database connection and make sure the table exists. <br>";
-    echo "Error Message: " . $e->getMessage() . "</div><br>";
-}
-
-// Function to get all types from the vehicle_type table
+// Function to get all types from the database
 function getAllTypes($conn) {
     try {
-        $query = "SELECT DISTINCT vehicle_type FROM vehicle_inventory";
+        $query = "SELECT * FROM vehicle_type"; // Select all columns from the vehicle_type table        
         $statement = $conn->prepare($query);
         $statement->execute();
         $types = $statement->fetchAll(PDO::FETCH_ASSOC);
         $statement->closeCursor();
         return $types;
     } catch (PDOException $e) {
+        // Handle the exception appropriately, such as logging the error or displaying a user-friendly message
         throw new PDOException("Error fetching types: " . $e->getMessage());
     }
 }
 
-// Variable to store data
+// Variable to store types
 $types = [];
 
-// Attempt to fetch data from the vehicle_type table
+// Attempt to fetch types from the database
 try {
-    $types = getAllTypes($GLOBALS['conn']);
+    $types = getAllTypes($GLOBALS['conn']); // Attempt to fetch types
+} catch (PDOException $e) {
+    // Display a verbose warning and error explanation for line 44
+    echo "<strong>Warning:</strong> An error occurred while fetching types from the database. Please check the database connection and make sure the 'types' table exists.<br>";
+    echo "<strong>Error:</strong> " . $e->getMessage() . "<br>";
+}
+
+// Function to get all makes from the database
+function getAllMakes($conn) {
+    try {
+        $query = "SELECT * FROM vehicle_make"; // Select all columns from the vehicle_make table
+        $statement = $conn->prepare($query);
+        $statement->execute();
+        $makes = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $makes;
+    } catch (PDOException $e) {
+        // Handle the exception appropriately, such as logging the error or displaying a user-friendly message
+        throw new PDOException("Error fetching makes: " . $e->getMessage());
+    }
+}
+
+// Variable to store makes
+$makes = [];
+
+// Attempt to fetch makes from the database
+try {
+    $makes = getAllMakes($GLOBALS['conn']); // Attempt to fetch makes
 } catch (PDOException $e) {
     // Display a verbose warning and error explanation
-    echo "<div style='color: red;'><strong>Error:</strong> An error occurred while fetching types. Please check the database connection and make sure the table exists. <br>";
-    echo "Error Message: " . $e->getMessage() . "</div><br>";
+    echo "<strong>Warning:</strong> An error occurred while fetching makes from the database. Please check the database connection and make sure the 'vehicle_make' table exists.<br>";
+    echo "<strong>Error:</strong> " . $e->getMessage() . "<br>";
+}
+
+// Function to get all classes from the database
+function getAllClasses($conn) {
+    try {
+        $query = "SELECT * FROM vehicle_class"; // Select all columns from the vehicle_class table
+        $statement = $conn->prepare($query);
+        $statement->execute();
+        $classes = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $classes;
+    } catch (PDOException $e) {
+        // Handle the exception appropriately, such as logging the error or displaying a user-friendly message
+        throw new PDOException("Error fetching classes: " . $e->getMessage());
+    }
+}
+
+// Variable to store classes
+$classes = [];
+
+// Attempt to fetch classes from the database
+try {
+    $classes = getAllClasses($GLOBALS['conn']); // Attempt to fetch classes
+} catch (PDOException $e) {
+    // Display a verbose warning and error explanation
+    echo "<strong>Warning:</strong> An error occurred while fetching classes from the database. Please check the database connection and make sure the 'vehicle_class' table exists.<br>";
+    echo "<strong>Error:</strong> " . $e->getMessage() . "<br>";
 }
 
 // Function to get all data from the vehicle_inventory table
@@ -96,7 +99,7 @@ function getAllData($conn) {
     }
 }
 
-// Variable to store all data
+// Variable to store data
 $vehicles = [];
 
 // Attempt to fetch data from the vehicle_inventory table
@@ -108,6 +111,18 @@ try {
     echo "Error Message: " . $e->getMessage() . "</div><br>";
 }
 
+// Call the getAllTypes function to fetch types from the database
+$types = getAllTypes($conn);
+
+// Call the getAllMakes function to fetch makes from the database
+$makes = getAllMakes($conn);
+
+// Call the getAllClasses function to fetch classes from the database
+$classes = getAllClasses($conn);
+
+// Call the getAllClasses function to fetch classes from the database
+$vehicle = getAllData($conn);
+
 // Filter vehicles based on the selected class
 $selectedClass = isset($_GET['class']) ? $_GET['class'] : null;
 $selectedType = isset($_GET['type']) ? $_GET['type'] : null;
@@ -118,23 +133,24 @@ $filteredVehicles = $vehicles; // Start with all vehicles
 // Filter based on class
 if ($selectedClass !== null && $selectedClass !== '#') {
     $filteredVehicles = array_filter($filteredVehicles, function($vehicle) use ($selectedClass) {
-        return $vehicle['vehicle_class'] === $selectedClass;
+        return $vehicle['class_id'] === $selectedClass;
     });
 }
 
 // Filter based on type
 if ($selectedType !== null && $selectedType !== '#') {
     $filteredVehicles = array_filter($filteredVehicles, function($vehicle) use ($selectedType) {
-        return $vehicle['vehicle_type'] === $selectedType;
+        return $vehicle['type_id'] === $selectedType;
     });
 }
 
 // Filter based on make
 if ($selectedMake !== null && $selectedMake !== '#') {
     $filteredVehicles = array_filter($filteredVehicles, function($vehicle) use ($selectedMake) {
-        return $vehicle['vehicle_make'] === $selectedMake;
+        return $vehicle['make_id'] === $selectedMake;
     });
 }
+
 
 // Sorting options
 $sorting = isset($_POST['sorting']) ? $_POST['sorting'] : null;
@@ -230,7 +246,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
                 <select id="typeSelect">
                     <option value="#" <?php if ($selectedType === null) echo 'selected'; ?>>View All Types</option> <!-- Default value -->
                     <?php foreach ($types as $type) : ?>
-                        <option value="<?php echo $type['vehicle_type']; ?>" <?php if ($selectedType === $type['vehicle_type']) echo 'selected'; ?>><?php echo $type['vehicle_type']; ?></option>
+                        <option value="<?php echo $type['type_id']; ?>" <?php if ($selectedType === $type['type_id']) echo 'selected'; ?>><?php echo $type['type_name']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </li>
@@ -239,7 +255,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
                 <select id="makeSelect">
                     <option value="#" <?php if ($selectedMake === null) echo 'selected'; ?>>View All Makes</option> <!-- Default value -->
                     <?php foreach ($makes as $make) : ?>
-                        <option value="<?php echo $make['vehicle_make']; ?>" <?php if ($selectedMake === $make['vehicle_make']) echo 'selected'; ?>><?php echo $make['vehicle_make']; ?></option>
+                        <option value="<?php echo $make['make_id']; ?>" <?php if ($selectedMake === $make['make_id']) echo 'selected'; ?>><?php echo $make['make_name']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </li>
@@ -249,7 +265,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
                     <select id="classSelect">
                         <option value="#" <?php if ($selectedClass === null) echo 'selected'; ?>>View All Classes</option>
                         <?php foreach ($classes as $class) : ?>
-                            <option value="<?php echo $class['vehicle_class']; ?>" <?php if ($selectedClass === $class['vehicle_class']) echo 'selected'; ?>><?php echo $class['vehicle_class']; ?></option>
+                            <option value="<?php echo $class['class_id']; ?>" <?php if ($selectedClass === $class['class_id']) echo 'selected'; ?>><?php echo $class['class_name']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </form>
@@ -302,13 +318,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
         </table>
 
         <!-- Additional links -->
-        <p><a href="#">View Full Vehicle List</a></p>
+        <p><a href="../controller/admin_inventory.php">View Full Vehicle List</a></p>
         <p><a href="../view/add_vehicle_view.php">Click here to add a vehicle</a></p>
-        <p><a href="#">View/Edit Vehicle Makes</a></p>
-        <p><a href="#">View/Edit Vehicle Types</a></p>
-        <p><a href="#">View/Edit Vehicle Classes</a></p>
+        <p><a href="../view/add_make_view.php">View/Edit Vehicle Makes</a></p>
+        <p><a href="../view/add_type_view.php">View/Edit Vehicle Types</a></p>
+        <p><a href="../view/add_class_view.php">View/Edit Vehicle Classes</a></p>
     </div>
 
+    
     <script>
         // JavaScript to redirect to manage_classes_view.php with the selected class, type, and make
         document.getElementById('classSelect').addEventListener('change', function() {
@@ -337,6 +354,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
             window.location.href = '../view/manage_makes_view.php?make=' + encodeURIComponent(selectedMake) + '&class=' + encodeURIComponent(selectedClass) + '&type=' + encodeURIComponent(selectedType);
         });
     </script>
+
 
 
 </body>
