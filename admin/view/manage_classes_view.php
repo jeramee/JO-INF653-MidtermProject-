@@ -1,196 +1,6 @@
 <!-- ../controller/manage_classes_view.php -->
 <?php
-include_once('../model/database.php');
-include_once('../model/class_db.php');
-
-// Function to get all types from the database
-function getAllTypes($conn) {
-    try {
-        $query = "SELECT * FROM vehicle_type"; // Select all columns from the vehicle_type table        
-        $statement = $conn->prepare($query);
-        $statement->execute();
-        $types = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $statement->closeCursor();
-        return $types;
-    } catch (PDOException $e) {
-        // Handle the exception appropriately, such as logging the error or displaying a user-friendly message
-        throw new PDOException("Error fetching types: " . $e->getMessage());
-    }
-}
-
-// Variable to store types
-$types = [];
-
-// Attempt to fetch types from the database
-try {
-    $types = getAllTypes($GLOBALS['conn']); // Attempt to fetch types
-} catch (PDOException $e) {
-    // Display a verbose warning and error explanation for line 44
-    echo "<strong>Warning:</strong> An error occurred while fetching types from the database. Please check the database connection and make sure the 'types' table exists.<br>";
-    echo "<strong>Error:</strong> " . $e->getMessage() . "<br>";
-}
-
-// Function to get all makes from the database
-function getAllMakes($conn) {
-    try {
-        $query = "SELECT * FROM vehicle_make"; // Select all columns from the vehicle_make table
-        $statement = $conn->prepare($query);
-        $statement->execute();
-        $makes = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $statement->closeCursor();
-        return $makes;
-    } catch (PDOException $e) {
-        // Handle the exception appropriately, such as logging the error or displaying a user-friendly message
-        throw new PDOException("Error fetching makes: " . $e->getMessage());
-    }
-}
-
-// Variable to store makes
-$makes = [];
-
-// Attempt to fetch makes from the database
-try {
-    $makes = getAllMakes($GLOBALS['conn']); // Attempt to fetch makes
-} catch (PDOException $e) {
-    // Display a verbose warning and error explanation
-    echo "<strong>Warning:</strong> An error occurred while fetching makes from the database. Please check the database connection and make sure the 'vehicle_make' table exists.<br>";
-    echo "<strong>Error:</strong> " . $e->getMessage() . "<br>";
-}
-
-// Function to get all classes from the database
-function getAllClasses($conn) {
-    try {
-        $query = "SELECT * FROM vehicle_class"; // Select all columns from the vehicle_class table
-        $statement = $conn->prepare($query);
-        $statement->execute();
-        $classes = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $statement->closeCursor();
-        return $classes;
-    } catch (PDOException $e) {
-        // Handle the exception appropriately, such as logging the error or displaying a user-friendly message
-        throw new PDOException("Error fetching classes: " . $e->getMessage());
-    }
-}
-
-// Variable to store classes
-$classes = [];
-
-// Attempt to fetch classes from the database
-try {
-    $classes = getAllClasses($GLOBALS['conn']); // Attempt to fetch classes
-} catch (PDOException $e) {
-    // Display a verbose warning and error explanation
-    echo "<strong>Warning:</strong> An error occurred while fetching classes from the database. Please check the database connection and make sure the 'vehicle_class' table exists.<br>";
-    echo "<strong>Error:</strong> " . $e->getMessage() . "<br>";
-}
-
-// Function to get all data from the vehicle_inventory table
-function getAllData($conn) {
-    try {
-        $query = "SELECT * FROM vehicle_inventory"; // Select all columns from the vehicle_inventory table
-        $statement = $conn->prepare($query);
-        $statement->execute();
-        $data = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $statement->closeCursor();
-        return $data;
-    } catch (PDOException $e) {
-        // Handle the exception appropriately, such as logging the error or displaying a user-friendly message
-        throw new PDOException("Error fetching data from vehicle_inventory: " . $e->getMessage());
-    }
-}
-
-// Variable to store data
-$vehicles = [];
-
-// Attempt to fetch data from the vehicle_inventory table
-try {
-    $vehicles = getAllData($GLOBALS['conn']);
-} catch (PDOException $e) {
-    // Display a verbose warning and error explanation
-    echo "<div style='color: red;'><strong>Error:</strong> An error occurred while fetching data from the database. Please check the database connection and make sure the table exists. <br>";
-    echo "Error Message: " . $e->getMessage() . "</div><br>";
-}
-
-// Call the getAllTypes function to fetch types from the database
-$types = getAllTypes($conn);
-
-// Call the getAllMakes function to fetch makes from the database
-$makes = getAllMakes($conn);
-
-// Call the getAllClasses function to fetch classes from the database
-$classes = getAllClasses($conn);
-
-// Call the getAllClasses function to fetch classes from the database
-$vehicle = getAllData($conn);
-
-// Filter vehicles based on the selected class
-$selectedClass = isset($_GET['class']) ? $_GET['class'] : null;
-$selectedType = isset($_GET['type']) ? $_GET['type'] : null;
-$selectedMake = isset($_GET['make']) ? $_GET['make'] : null;
-$filteredVehicles = $vehicles; // Start with all vehicles
-
-// Apply filters sequentially
-// Filter based on class
-if ($selectedClass !== null && $selectedClass !== '#') {
-    $filteredVehicles = array_filter($filteredVehicles, function($vehicle) use ($selectedClass) {
-        return $vehicle['class_id'] === $selectedClass;
-    });
-}
-
-// Filter based on type
-if ($selectedType !== null && $selectedType !== '#') {
-    $filteredVehicles = array_filter($filteredVehicles, function($vehicle) use ($selectedType) {
-        return $vehicle['type_id'] === $selectedType;
-    });
-}
-
-// Filter based on make
-if ($selectedMake !== null && $selectedMake !== '#') {
-    $filteredVehicles = array_filter($filteredVehicles, function($vehicle) use ($selectedMake) {
-        return $vehicle['make_id'] === $selectedMake;
-    });
-}
-
-// Sorting options
-$sorting = isset($_POST['sorting']) ? $_POST['sorting'] : null;
-
-// Function to compare vehicles based on price
-function comparePrice($a, $b) {
-    return $a['vehicle_price'] - $b['vehicle_price'];
-}
-
-// Function to compare vehicles based on year
-function compareYear($a, $b) {
-    return $a['vehicle_year'] - $b['vehicle_year'];
-}
-
-// Sort filtered vehicles based on selected sorting option
-if ($sorting === 'price') {
-    usort($filteredVehicles, 'comparePrice');
-} elseif ($sorting === 'year') {
-    usort($filteredVehicles, 'compareYear');
-}
-
-// Handle form submission to remove vehicle
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
-    $vehicle_id = $_POST['vehicle_id'];
-
-    try {
-        // Prepare and execute the DELETE query
-        $query = "DELETE FROM vehicle_inventory WHERE vehicle_id = :vehicle_id";
-        $statement = $conn->prepare($query);
-        $statement->bindParam(':vehicle_id', $vehicle_id);
-        $statement->execute();
-
-        // Redirect back to the same page after removing the vehicle
-        header("Location: admin_inventory.php");
-        exit();
-    } catch (PDOException $e) {
-        // Handle any errors if the DELETE query fails
-        echo "<div style='color: red;'><strong>Error:</strong> An error occurred while removing the vehicle. Please try again. <br>";
-        echo "Error Message: " . $e->getMessage() . "</div><br>";
-    }
-}
+include_once('../view/admin_header.php');
 
 ?>
 
@@ -200,39 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Page with Selection Classes</title>
-    <style>
-        /* Add some basic styling for better presentation */
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .error-message {
-            color: red;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="../view/css/main.css">
 </head>
 <body>
     <div class="container">
@@ -245,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
                 <select id="typeSelect">
                     <option value="#" <?php if ($selectedType === null) echo 'selected'; ?>>View All Types</option> <!-- Default value -->
                     <?php foreach ($types as $type) : ?>
-                        <option value="<?php echo $type['type_id']; ?>" <?php if ($selectedType === $type['type_id']) echo 'selected'; ?>><?php echo $type['type_name']; ?></option>
+                        <option value="<?php echo $type['type_id']; ?>" <?php if ($selectedType === $type['type_id'] || (isset($_GET['type']) && $_GET['type'] == $type['type_id'])) echo 'selected'; ?>><?php echo $type['type_name']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </li>
@@ -254,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
                 <select id="makeSelect">
                     <option value="#" <?php if ($selectedMake === null) echo 'selected'; ?>>View All Makes</option> <!-- Default value -->
                     <?php foreach ($makes as $make) : ?>
-                        <option value="<?php echo $make['make_id']; ?>" <?php if ($selectedMake === $make['make_id']) echo 'selected'; ?>><?php echo $make['make_name']; ?></option>
+                        <option value="<?php echo $make['make_id']; ?>" <?php if ($selectedMake === $make['make_id'] || (isset($_GET['make']) && $_GET['make'] == $make['make_id'])) echo 'selected'; ?>><?php echo $make['make_name']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </li>
@@ -264,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
                     <select id="classSelect">
                         <option value="#" <?php if ($selectedClass === null) echo 'selected'; ?>>View All Classes</option>
                         <?php foreach ($classes as $class) : ?>
-                            <option value="<?php echo $class['class_id']; ?>" <?php if ($selectedClass === $class['class_id']) echo 'selected'; ?>><?php echo $class['class_name']; ?></option>
+                            <option value="<?php echo $class['class_id']; ?>" <?php if ($selectedClass === $class['class_id'] || (isset($_GET['class']) && $_GET['class'] == $class['class_id'])) echo 'selected'; ?>><?php echo $class['class_name']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </form>
@@ -300,10 +78,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
                 <?php foreach ($filteredVehicles as $vehicle) : ?>
                     <tr>
                         <td><?php echo $vehicle['vehicle_year']; ?></td>
-                        <td><?php echo $vehicle['vehicle_make']; ?></td>
+                        <td><?php echo getMakeNameById($vehicle['make_id'], $makes); ?></td>
                         <td><?php echo $vehicle['vehicle_model']; ?></td>
-                        <td><?php echo $vehicle['vehicle_type']; ?></td>
-                        <td><?php echo $vehicle['vehicle_class']; ?></td>
+                        <td><?php echo getTypeNameById($vehicle['type_id'], $types); ?></td>
+                        <td><?php echo getClassNameById($vehicle['class_id'], $classes); ?></td>
                         <td>$<?php echo $vehicle['vehicle_price']; ?></td>
                         <td>
                             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
@@ -315,6 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_vehicle'])) {
                 <?php endforeach; ?>
             </tbody>
         </table>
+
 
         <!-- Additional links -->
         <p><a href="../controller/admin_inventory.php">View Full Vehicle List</a></p>
