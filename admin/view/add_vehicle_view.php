@@ -160,7 +160,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_vehicle'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Add Vehicle Page</title>
-    <!-- Include any additional head elements from your original code here... -->
+    <!-- Include any additional head elements from original code here... -->
 </head>
 <body>
     <h1>Zippy Admin</h1>

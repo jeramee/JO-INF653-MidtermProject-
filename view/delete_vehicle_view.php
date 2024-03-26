@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delete Vehicle</title>
-    <!-- Include any additional head elements from your original code here... -->
+    <!-- Include any additional head elements from original code here... -->
 </head>
 <body>
     <h1>Delete Vehicle</h1>
@@ -28,7 +28,7 @@
     <!-- Additional content -->
     <p>Select a vehicle from the list and click "Delete Vehicle" to remove it from the inventory.</p>
     <br><br>
-    <p>You can also <a href="../controller/index.php">go back to the Vehicle Inventory</a>.</p>
+    <p>I can also <a href="../controller/index.php">go back to the Vehicle Inventory</a>.</p>
 
     <?php
     // Check if the form is submitted
@@ -57,7 +57,7 @@ function handleFormSubmission() {
         try {
             echo "Deleting Vehicle...\n"; // Output to the web page
 
-            // Delete from the database (replace with your actual function)
+            // Delete from the database (replace with actual function)
             // deleteVehicle($GLOBALS['conn'], $vehicle_id);
 
             echo "Vehicle deleted successfully!\n"; // Output to the web page

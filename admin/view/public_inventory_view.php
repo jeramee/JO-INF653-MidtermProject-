@@ -14,8 +14,8 @@ try {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Your existing public_inventory_view.php code for the HTML head... -->
-    <!-- Include any additional head elements from your original code here... -->
+    <!-- Existing public_inventory_view.php code for the HTML head... -->
+    <!-- Include any additional head elements from original code here... -->
 
     <!-- Include common styles or scripts if needed -->
     <link rel="stylesheet" href="path/to/common.css">

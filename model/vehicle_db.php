@@ -22,8 +22,8 @@ function getPublicInventory($conn) {
 }
 
 function getVehicles($conn, $orderBy = 'price', $make = null, $type = null, $class = null) {
-    // Your code to fetch vehicles based on parameters
-    // Adjust the SQL query based on your database structure and requirements
+    // Code to fetch vehicles based on parameters
+    // Adjust the SQL query based on database structure and requirements
     $query = 'SELECT * FROM vehicles';
 
     // Add conditions based on parameters
@@ -64,8 +64,8 @@ function getVehicles($conn, $orderBy = 'price', $make = null, $type = null, $cla
 }
 
 function deleteVehicle($conn, $vehicleId) {
-    // Your code to delete a vehicle
-    // Adjust the SQL query based on your database structure
+    // Code to delete a vehicle
+    // Adjust the SQL query based on database structure
     $query = 'DELETE FROM vehicles WHERE vehicle_id = :vehicle_id';
 
     // Prepare and execute the statement

@@ -39,7 +39,7 @@ try {
 <?php
 try {
     // Initialize $vehicles here
-    $vehicles = []; // Example initialization, replace with your actual data
+    $vehicles = []; // Example initialization, replace with actual data
     if (count($vehicles) > 0) {
         foreach ($vehicles as $vehicle) {
             echo "<div>";

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zippy Used Autos</title>
-    <link rel="stylesheet" href="../view/css/main.css"> <!-- Include your CSS file -->
+    <link rel="stylesheet" href="../view/css/main.css"> <!-- Include CSS file -->
 </head>
 <body>
 <header>

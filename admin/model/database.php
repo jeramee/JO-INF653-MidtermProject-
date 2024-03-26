@@ -5,7 +5,7 @@ if (!function_exists('connectToDatabase')) {
         $host = 'localhost';
         $dbname = 'zippyusedautos'; // Updated database name
         $username = 'root';
-        $password = ''; // Use your actual password if set
+        $password = ''; // Use actual password if set
 
         try {
             $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);

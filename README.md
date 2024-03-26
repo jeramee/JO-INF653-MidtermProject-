@@ -1,5 +1,5 @@
 # JO-INF653-MidtermProject
-The project involves developing Zippy Used Autos' PHP Web Application, including database creation, public homepage features, admin backend, MVC design, responsive design, Heroku deployment, and submission requirements.
+The project involves developing Zippy Used Autos' PHP Web Application, including database creation, public homepage features, admin backend, MVC design, responsive design, Repl deployment, and submission requirements.
 
 ## INF 653 - PHP Web Application Zippy Used Autos
 
@@ -13,17 +13,16 @@ This assignment involves creating a PHP ToDo List project for INF 653 - Back-End
 
 ### Files
 
-- **index.php:** The main PHP file responsible for displaying the ToDo List and handling form submissions.
-- **model/database.php:** PHP script for establishing a connection to the MySQL database.
-- **model/item_db.php:** PHP script for handling ToDo items in the database.
-- **model/category_db.php:** PHP script for handling categories in the database.
-- **view/header.php:** Header file for the HTML structure.
-- **view/footer.php:** Footer file for the HTML structure.
-- **view/error.php:** Error handling file for displaying error messages.
-- **view/css/main.css:** CSS file for styling the application.
-- **view/add.php:** Add items to the list on a separate page.
-- **view/item_list.php:** Template for displaying ToDo items.
-- **view/category_list.php:** Template for displaying categories.
+- **delete_vehicle_view.php:** This file contains the view for deleting a vehicle.
+- **footer.php:** Footer file for the HTML structure of the application.
+- **manage_classes_view.php:** This file contains the view for managing vehicle classes.
+- **manage_makes_view.php:** This file contains the view for managing vehicle makes.
+- **manage_types_view.php:** This file contains the view for managing vehicle types.
+- **public_header.php:** Header file for the HTML structure of the public-facing pages.
+- **index.php:** The main PHP file responsible for displaying the main page of the application.
+- **admin_header.php:** Header file for the HTML structure of the admin pages.
+- **admin_inventory.php:** The main PHP file responsible for displaying and managing the admin inventory.
+
 - **.gitignore:** Configuration file for Git to ignore specific files and directories.
 
 ### Setup Instructions

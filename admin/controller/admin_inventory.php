@@ -1,4 +1,3 @@
-<!-- ../controller/admin_inventory.php -->
 <?php
 include_once('../view/admin_header.php');
 
@@ -11,6 +10,13 @@ include_once('../view/admin_header.php');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zippy Admin</title>
     <link rel="stylesheet" type="text/css" href="../view/css/main.css">
+    <!-- Include the script tag for showErrorPopup -->
+    <script>
+        function showErrorPopup() {
+            alert("Error inserting data: Duplicate vehicle in that category.");
+            // I can use a more sophisticated modal/popup library if needed
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -22,7 +28,7 @@ include_once('../view/admin_header.php');
                 <select id="typeSelect">
                     <option value="#" <?php if ($selectedType === null) echo 'selected'; ?>>View All Types</option> <!-- Default value -->
                     <?php foreach ($types as $type) : ?>
-                        <option value="<?php echo $type['type_id']; ?>" <?php if ($selectedType === $type['type_id']) echo 'selected'; ?>><?php echo $type['type_name']; ?></option>
+                        <option value="<?php echo $type['type_id']; ?>" <?php if ($selectedType === $type['type_id'] || (isset($_GET['type']) && $_GET['type'] == $type['type_id'])) echo 'selected'; ?>><?php echo $type['type_name']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </li>
@@ -31,7 +37,7 @@ include_once('../view/admin_header.php');
                 <select id="makeSelect">
                     <option value="#" <?php if ($selectedMake === null) echo 'selected'; ?>>View All Makes</option> <!-- Default value -->
                     <?php foreach ($makes as $make) : ?>
-                        <option value="<?php echo $make['make_id']; ?>" <?php if ($selectedMake === $make['make_id']) echo 'selected'; ?>><?php echo $make['make_name']; ?></option>
+                        <option value="<?php echo $make['make_id']; ?>" <?php if ($selectedMake === $make['make_id'] || (isset($_GET['make']) && $_GET['make'] == $make['make_id'])) echo 'selected'; ?>><?php echo $make['make_name']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </li>
@@ -41,12 +47,13 @@ include_once('../view/admin_header.php');
                     <select id="classSelect">
                         <option value="#" <?php if ($selectedClass === null) echo 'selected'; ?>>View All Classes</option>
                         <?php foreach ($classes as $class) : ?>
-                            <option value="<?php echo $class['class_id']; ?>" <?php if ($selectedClass === $class['class_id']) echo 'selected'; ?>><?php echo $class['class_name']; ?></option>
+                            <option value="<?php echo $class['class_id']; ?>" <?php if ($selectedClass === $class['class_id'] || (isset($_GET['class']) && $_GET['class'] == $class['class_id'])) echo 'selected'; ?>><?php echo $class['class_name']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </form>
             </li>
         </ul>
+
 
 
         <!-- Sorting options -->
@@ -93,44 +100,10 @@ include_once('../view/admin_header.php');
             </tbody>
         </table>
 
+<?php
+include_once('../view/footer.php');
 
-        <!-- Additional links -->
-        <p><a href="../controller/admin_inventory.php">View Full Vehicle List</a></p>
-        <p><a href="../view/add_vehicle_view.php">Click here to add a vehicle</a></p>
-        <p><a href="../view/add_make_view.php">View/Edit Vehicle Makes</a></p>
-        <p><a href="../view/add_type_view.php">View/Edit Vehicle Types</a></p>
-        <p><a href="../view/add_class_view.php">View/Edit Vehicle Classes</a></p>
-    </div>
-
-    <script>
-        // JavaScript to redirect to manage_classes_view.php with the selected class, type, and make
-        document.getElementById('classSelect').addEventListener('change', function() {
-            var selectedClass = this.value;
-            var selectedType = document.getElementById('typeSelect').value;
-            var selectedMake = document.getElementById('makeSelect').value;
-            // Redirect to the correct location: view/manage_classes_view.php with the selected parameters
-            window.location.href = '../view/manage_classes_view.php?class=' + encodeURIComponent(selectedClass) + '&type=' + encodeURIComponent(selectedType) + '&make=' + encodeURIComponent(selectedMake);
-        });
-
-        // JavaScript to redirect to manage_types_view.php with the selected type, class, and make
-        document.getElementById('typeSelect').addEventListener('change', function() {
-            var selectedType = this.value;
-            var selectedClass = document.getElementById('classSelect').value;
-            var selectedMake = document.getElementById('makeSelect').value;
-            // Redirect to the correct location: view/manage_types_view.php with the selected parameters
-            window.location.href = '../view/manage_types_view.php?type=' + encodeURIComponent(selectedType) + '&class=' + encodeURIComponent(selectedClass) + '&make=' + encodeURIComponent(selectedMake);
-        });
-
-        // JavaScript to redirect to manage_makes_view.php with the selected make, class, and type
-        document.getElementById('makeSelect').addEventListener('change', function() {
-            var selectedMake = this.value;
-            var selectedClass = document.getElementById('classSelect').value;
-            var selectedType = document.getElementById('typeSelect').value;
-            // Redirect to the correct location: view/manage_makes_view.php with the selected parameters
-            window.location.href = '../view/manage_makes_view.php?make=' + encodeURIComponent(selectedMake) + '&class=' + encodeURIComponent(selectedClass) + '&type=' + encodeURIComponent(selectedType);
-        });
-    </script>
+include_once('../view/troubleshooting_footer.php');
 
 
-</body>
-</html>
+?>
